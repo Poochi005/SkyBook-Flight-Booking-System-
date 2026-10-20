@@ -1,37 +1,190 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Available Flights - SkyBook</title>
+  <meta name="description" content="Search and compare available flights with SkyBook.">
+
   <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .results-container {
+      width: min(1100px, 92%);
+      margin: 35px auto;
+    }
+
+    .results-heading {
+      margin-bottom: 22px;
+    }
+
+    .search-summary {
+      background: #f2f7ff;
+      border-radius: 10px;
+      padding: 16px;
+      margin: 18px 0;
+      line-height: 1.8;
+    }
+
+    .status-message {
+      padding: 16px;
+      margin: 20px 0;
+      border-radius: 8px;
+      background: #f5f5f5;
+    }
+
+    .flight-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 18px;
+      margin: 22px 0;
+    }
+
+    .flight-card {
+      border: 1px solid #dce3ed;
+      border-radius: 12px;
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    }
+
+    .flight-card h3 {
+      margin-top: 0;
+    }
+
+    .flight-card p {
+      margin: 10px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .flight-card button {
+      cursor: pointer;
+    }
+
+    .new-search-link {
+      display: inline-block;
+      margin: 18px 0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 600px) {
+      .results-container {
+        margin: 22px auto;
+      }
+
+      .flight-card {
+        padding: 16px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<header>
-  <nav class="navbar">
-    <a href="index.html" class="logo">&#9992; SkyBook</a>
-    <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li id="bookingsLink"><a href="mybookings.html">My Bookings</a></li>
-      <li id="adminLink" style="display:none"><a href="admin.html">Admin Panel</a></li>
-      <li id="loginLink"><a href="login.html">Login</a></li>
-      <li id="registerLink"><a href="register.html" class="btn-accent">Register</a></li>
-      <li id="userBox" style="display:none">
-        <span id="userName"></span>
-        <button id="logoutBtn" class="btn-accent" style="border:0;padding:7px 14px;border-radius:5px;font-weight:600">Logout</button>
-      </li>
-    </ul>
-  </nav>
-</header>
-  <main>
-    <h2 id="routeTitle"></h2>
-    <p id="info" class="muted" style="margin-bottom:14px"></p>
-    <!-- search.js fills this container with one card per flight -->
+  <header>
+    <nav class="navbar">
+      <a href="index.html" class="logo">&#9992; SkyBook</a>
+
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li id="bookingsLink">
+          <a href="mybookings.html">My Bookings</a>
+        </li>
+        <li id="adminLink" style="display:none">
+          <a href="admin.html">Admin Panel</a>
+        </li>
+        <li id="loginLink">
+          <a href="login.html">Login</a>
+        </li>
+        <li id="registerLink">
+          <a href="register.html" class="btn-accent">Register</a>
+        </li>
+        <li id="userBox" style="display:none">
+          <span id="userName"></span>
+          <button
+            id="logoutBtn"
+            class="btn-accent"
+            type="button"
+            style="border:0;padding:7px 14px;border-radius:5px;font-weight:600"
+          >
+            Logout
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="results-container">
+    <section class="results-heading">
+      <h1>Available Flights</h1>
+      <p>Compare flights and choose the best option for your journey.</p>
+    </section>
+
+    <section id="searchSummary" class="search-summary">
+      <strong>From:</strong> <span id="sourceText">Not selected</span><br>
+      <strong>To:</strong> <span id="destinationText">Not selected</span><br>
+      <strong>Departure date:</strong> <span id="dateText">Not selected</span>
+    </section>
+
+    <h2 id="routeTitle">Search Results</h2>
+
+    <p id="info" class="status-message" role="status" aria-live="polite">
+      Searching for available flights...
+    </p>
+
     <div id="flightList" class="flight-list"></div>
-    <p><a href="index.html">&larr; New search</a></p>
+
+    <p>
+      <a href="index.html" class="new-search-link">
+        &larr; Search again
+      </a>
+    </p>
   </main>
 
+  <footer>
+    <p>&copy; 2026 SkyBook | Flight Ticket Booking System</p>
+  </footer>
+
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+
+      const source = params.get("source") || "";
+      const destination = params.get("destination") || "";
+      const date = params.get("date") || "";
+
+      function displayLocation(value) {
+        return value
+          ? value.replace(/\+/g, " ").replace(/-/g, " ")
+              .replace(/\b\w/g, letter => letter.toUpperCase())
+          : "Not selected";
+      }
+
+      document.getElementById("sourceText").textContent =
+        displayLocation(source);
+
+      document.getElementById("destinationText").textContent =
+        displayLocation(destination);
+
+      document.getElementById("dateText").textContent = date || "Not selected";
+
+      const routeTitle = document.getElementById("routeTitle");
+
+      if (source && destination) {
+        routeTitle.textContent =
+          displayLocation(source) + " → " + displayLocation(destination);
+      } else {
+        routeTitle.textContent = "Search Results";
+      }
+    })();
+  </script>
+
+  <!-- Keep these scripts to preserve the existing authentication and search integration. -->
   <script src="js/auth.js"></script>
   <script src="js/search.js"></script>
-<footer><p>&copy; 2026 SkyBook | Flight Ticket Booking System</p></footer>
-</body></html>
+</body>
+</html>

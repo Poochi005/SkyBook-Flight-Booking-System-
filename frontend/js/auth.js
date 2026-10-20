@@ -1,7 +1,7 @@
 /* Shared helpers: API address, login state, navigation bar, login and register forms. */
 // Local default matches the current Windows setup (8080 is occupied by Tomcat9).
 // For deployment, replace this with your Railway URL, e.g. https://your-service.up.railway.app/api
-const API = (window.SKYBOOK_API_BASE || "http://localhost:8081/api").replace(/\\/$/, "");
+const API = (window.SKYBOOK_API_BASE || "https://skybook-backend-tksr.onrender.com/api").replace(/\\/$/, "");
 
 /* Escape text before putting it in HTML (prevents HTML/script injection). */
 function esc(v) {

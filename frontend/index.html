@@ -79,7 +79,10 @@
       box-shadow: 0 0 0 3px #6654dc18;
     }
 
-    button { font: inherit; cursor: pointer; }
+    button {
+      font: inherit;
+      cursor: pointer;
+    }
 
     button:disabled {
       opacity: .65;
@@ -96,7 +99,9 @@
       font-weight: 700;
     }
 
-    .btn-primary:hover:not(:disabled) { background: #5140c2; }
+    .btn-primary:hover:not(:disabled) {
+      background: #5140c2;
+    }
 
     .divider {
       display: flex;
@@ -129,8 +134,14 @@
       font-weight: 600;
     }
 
-    .btn-google:hover:not(:disabled) { background: #f8f8fc; }
-    .google-icon { width: 19px; height: 19px; }
+    .btn-google:hover:not(:disabled) {
+      background: #f8f8fc;
+    }
+
+    .google-icon {
+      width: 19px;
+      height: 19px;
+    }
 
     .toggle-text {
       margin: 22px 0 0;
@@ -185,7 +196,9 @@
     }
 
     @media (max-width: 420px) {
-      .login-card { padding: 28px 22px; }
+      .login-card {
+        padding: 28px 22px;
+      }
     }
   </style>
 </head>
@@ -195,11 +208,17 @@
     <div class="logo">✈️</div>
 
     <h1 id="formTitle">Welcome back</h1>
+
     <p class="subtitle" id="formSubtitle">
       Sign in to continue to SkyBook
     </p>
 
-    <div id="message" class="message" role="status" aria-live="polite"></div>
+    <div
+      id="message"
+      class="message"
+      role="status"
+      aria-live="polite"
+    ></div>
 
     <form id="authForm">
       <div class="field">
@@ -283,8 +302,8 @@
     const formSubtitle = document.getElementById("formSubtitle");
     const messageEl = document.getElementById("message");
 
-    let isSignUp = false;
     let auth = null;
+    let isSignUp = false;
     let redirectStarted = false;
     let authActionInProgress = false;
 
@@ -312,10 +331,13 @@
       if (redirectStarted) return;
 
       redirectStarted = true;
-      showMessage("Login successful! Redirecting to SkyBook...", "success");
 
-      // Use a fixed URL to avoid relative-path routing problems.
-      window.location.assign(DASHBOARD_URL);
+      showMessage(
+        "Login successful! Redirecting to SkyBook...",
+        "success"
+      );
+
+      window.location.replace(DASHBOARD_URL);
     }
 
     function readableAuthError(error) {
@@ -392,14 +414,14 @@
       updateMode();
     });
 
-    // Email/password sign-in and account creation.
+    // Email and password authentication.
     form.addEventListener("submit", async function(event) {
       event.preventDefault();
       clearMessage();
 
       if (!auth) {
         showMessage(
-          "Firebase is not initialized. Check your configuration and internet connection.",
+          "Firebase failed to initialize. Check your configuration.",
           "error"
         );
         return;
@@ -407,13 +429,13 @@
 
       if (authActionInProgress) return;
 
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
-
       authActionInProgress = true;
       setLoading(true);
 
       try {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
         if (isSignUp) {
           await auth.createUserWithEmailAndPassword(email, password);
         } else {
@@ -432,13 +454,13 @@
       }
     });
 
-    // Google sign-in.
+    // Google authentication.
     googleBtn.addEventListener("click", async function() {
       clearMessage();
 
       if (!auth) {
         showMessage(
-          "Firebase is not initialized. Check your configuration and internet connection.",
+          "Firebase failed to initialize. Check your configuration.",
           "error"
         );
         return;
@@ -457,11 +479,11 @@
 
         const result = await auth.signInWithPopup(provider);
 
-        if (result && result.user) {
-          redirectToDashboard();
-        } else {
+        if (!result || !result.user) {
           throw new Error("Google sign-in did not return a user.");
         }
+
+        redirectToDashboard();
       } catch (error) {
         showMessage(readableAuthError(error), "error");
       } finally {
@@ -473,7 +495,7 @@
       }
     });
 
-    // Initialize Firebase once.
+    // Firebase initialization.
     try {
       if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
@@ -486,8 +508,7 @@
           console.error("Firebase persistence error:", error);
         });
 
-      // Do not redirect during an active sign-in attempt.
-      // The sign-in handlers perform the redirect after success.
+      // Existing signed-in users can proceed to the dashboard.
       auth.onAuthStateChanged(function(user) {
         if (
           user &&
@@ -499,6 +520,7 @@
       });
     } catch (error) {
       console.error("Firebase initialization error:", error);
+
       showMessage(
         "Firebase initialization failed. Check your Firebase project settings.",
         "error"

@@ -6,9 +6,123 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0b1b35">
   <title>SkyBook - Flight Ticket Booking</title>
+
   <link rel="stylesheet" href="css/style.css">
 
   <style>
+    :root {
+      --skybook-navy: #0b1b35;
+      --skybook-blue: #1769e0;
+      --skybook-light: #f4f7fc;
+    }
+
+    body {
+      margin: 0;
+      background: var(--skybook-light);
+      color: #17243a;
+      font-family: Arial, sans-serif;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 14px 5%;
+      background: var(--skybook-navy);
+      color: white;
+    }
+
+    .logo {
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+    }
+
+    .btn-accent {
+      border: 0;
+      border-radius: 7px;
+      padding: 11px 16px;
+      background: var(--skybook-blue);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-accent:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .hero {
+      padding: 55px 6%;
+      color: white;
+      background: linear-gradient(120deg, #0b1b35, #1769e0);
+    }
+
+    .hero h1 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 5vw, 44px);
+    }
+
+    .hero p {
+      line-height: 1.6;
+    }
+
+    .search-wrap {
+      width: min(1100px, 92%);
+      margin: 28px auto;
+    }
+
+    .search-box,
+    .feature-card,
+    .flight-card {
+      padding: 22px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px #0000000a;
+    }
+
+    #searchForm {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+      align-items: end;
+      gap: 16px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .field input {
+      box-sizing: border-box;
+      width: 100%;
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      font-size: 15px;
+    }
+
     .search-message {
       display: none;
       margin: 18px 0;
@@ -29,49 +143,79 @@
       color: #176b36;
     }
 
-    .search-results {
+    .search-message.info {
+      display: block;
+      background: #edf4ff;
+      color: #174a8b;
+    }
+
+    .search-results,
+    .features {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 18px;
       margin-top: 20px;
     }
 
-    .flight-card {
-      padding: 20px;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      background: #fff;
-      box-shadow: 0 4px 15px #0000000a;
+    .flight-card h3 {
+      margin-top: 0;
+      color: var(--skybook-navy);
     }
 
-    .flight-card h3 { margin-top: 0; }
-    .flight-card p { margin: 10px 0; }
+    .flight-card p {
+      margin: 10px 0;
+      overflow-wrap: anywhere;
+    }
 
     .flight-card button {
       width: 100%;
-      margin-top: 10px;
-      cursor: pointer;
+      margin-top: 12px;
     }
 
     .search-loading {
-      margin-top: 20px;
+      margin: 20px 0;
       text-align: center;
     }
 
-    #date { min-width: 0; }
+    .muted {
+      color: #64748b;
+      line-height: 1.6;
+    }
 
-    [hidden] { display: none !important; }
+    footer {
+      margin-top: 45px;
+      padding: 20px;
+      text-align: center;
+      color: white;
+      background: var(--skybook-navy);
+    }
 
-    @media (max-width: 600px) {
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 850px) {
+      #searchForm {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 560px) {
+      .navbar {
+        align-items: flex-start;
+      }
+
       .nav-links {
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 12px;
       }
 
       #searchForm {
-        display: grid;
         grid-template-columns: 1fr;
-        gap: 14px;
+      }
+
+      .hero {
+        padding: 35px 5%;
       }
     }
   </style>
@@ -84,27 +228,14 @@
 
     <ul class="nav-links">
       <li><a href="dashboard.html">Home</a></li>
+      <li id="bookingsLink"><a href="mybookings.html">My Bookings</a></li>
+      <li id="adminLink" hidden><a href="admin.html">Admin Panel</a></li>
+      <li id="loginLink"><a href="index.html">Login</a></li>
+      <li id="registerLink"><a href="index.html">Register</a></li>
 
-      <li id="bookingsLink">
-        <a href="mybookings.html">My Bookings</a>
-      </li>
-
-      <li id="adminLink" style="display:none">
-        <a href="admin.html">Admin Panel</a>
-      </li>
-
-      <li id="loginLink">
-        <a href="index.html">Login</a>
-      </li>
-
-      <li id="registerLink">
-        <a href="index.html" class="btn-accent">Register</a>
-      </li>
-
-      <li id="userBox" style="display:none">
+      <li id="userBox" hidden>
         <span id="userName"></span>
-        <button type="button" id="logoutBtn" class="btn-accent"
-          style="border:0;padding:7px 14px;border-radius:5px;font-weight:600">
+        <button type="button" id="logoutBtn" class="btn-accent">
           Logout
         </button>
       </li>
@@ -112,16 +243,16 @@
   </nav>
 </header>
 
-<main style="max-width:none;padding:0">
+<main>
   <section class="hero">
-    <div>
-      <h1>Find your flight and book in minutes</h1>
-      <p>Search by city and date, see flight availability and fares.</p>
-    </div>
+    <h1>Find your flight and book in minutes</h1>
+    <p>Search flights by city and departure date. Compare fares and availability.</p>
   </section>
 
   <section class="search-wrap">
     <div class="search-box">
+      <h2>Search Flights</h2>
+
       <form id="searchForm">
         <div class="field">
           <label for="source">From</label>
@@ -156,8 +287,11 @@
       </form>
     </div>
 
-    <div id="searchMessage" class="search-message"
-      role="status" aria-live="polite"></div>
+    <div
+      id="searchMessage"
+      class="search-message"
+      role="status"
+      aria-live="polite"></div>
 
     <div id="searchLoading" class="search-loading" hidden>
       Searching available flights...
@@ -168,24 +302,24 @@
       <div id="searchResults" class="search-results"></div>
     </section>
 
-    <div class="features">
-      <div class="card">
-        <h3>Live availability</h3>
-        <p>See flight fares and seat availability returned by the backend.</p>
-      </div>
+    <section class="features">
+      <article class="feature-card">
+        <h3>Flight Availability</h3>
+        <p>View flights returned by the connected backend.</p>
+      </article>
 
-      <div class="card">
-        <h3>Safe booking</h3>
-        <p>Submit bookings through the server to apply its seat availability rules.</p>
-      </div>
+      <article class="feature-card">
+        <h3>Booking Information</h3>
+        <p>Continue to the booking page when the booking flow is configured.</p>
+      </article>
 
-      <div class="card">
-        <h3>Manage tickets</h3>
-        <p>Open My Bookings to view your tickets and booking information.</p>
-      </div>
-    </div>
+      <article class="feature-card">
+        <h3>Manage Tickets</h3>
+        <p>Use My Bookings to view your booking information.</p>
+      </article>
+    </section>
 
-    <p class="muted" style="margin-top:14px">
+    <p class="muted">
       Sample routes: Chennai → Delhi, Chennai → Mumbai,
       Delhi → Chennai, Bengaluru → Chennai, Mumbai → Chennai.
     </p>
@@ -197,17 +331,22 @@
 </footer>
 
 <script>
-  // SkyBook production backend.
+(() => {
+  "use strict";
+
+  // Production backend URL.
   window.SKYBOOK_API_BASE =
     "https://skybook-backend-tksr.onrender.com/api";
 
-  const dateInput = document.getElementById("date");
-  const searchForm = document.getElementById("searchForm");
-  const searchButton = document.getElementById("searchButton");
-  const searchMessage = document.getElementById("searchMessage");
-  const searchLoading = document.getElementById("searchLoading");
-  const resultsSection = document.getElementById("resultsSection");
-  const searchResults = document.getElementById("searchResults");
+  const $ = (id) => document.getElementById(id);
+
+  const dateInput = $("date");
+  const searchForm = $("searchForm");
+  const searchButton = $("searchButton");
+  const searchMessage = $("searchMessage");
+  const searchLoading = $("searchLoading");
+  const resultsSection = $("resultsSection");
+  const searchResults = $("searchResults");
 
   function getLocalDate() {
     const now = new Date();
@@ -219,23 +358,18 @@
 
   dateInput.min = getLocalDate();
 
+  if (!dateInput.value) {
+    dateInput.value = getLocalDate();
+  }
+
   function showMessage(message, type = "error") {
     searchMessage.textContent = message;
-    searchMessage.className = "search-message " + type;
+    searchMessage.className = `search-message ${type}`;
   }
 
   function clearMessage() {
     searchMessage.textContent = "";
     searchMessage.className = "search-message";
-  }
-
-  function flightValue(flight, keys, fallback = "Not available") {
-    for (const key of keys) {
-      if (flight && flight[key] !== undefined && flight[key] !== null) {
-        return flight[key];
-      }
-    }
-    return fallback;
   }
 
   function addText(parent, tag, text) {
@@ -245,12 +379,33 @@
     return element;
   }
 
+  function flightValue(flight, keys, fallback = "Not available") {
+    for (const key of keys) {
+      if (
+        flight &&
+        flight[key] !== undefined &&
+        flight[key] !== null &&
+        flight[key] !== ""
+      ) {
+        return flight[key];
+      }
+    }
+    return fallback;
+  }
+
+  function getFlightId(flight) {
+    return flightValue(flight, ["id", "flightId", "flight_id"], "");
+  }
+
   function renderFlights(flights) {
     searchResults.replaceChildren();
     resultsSection.hidden = false;
 
     if (!Array.isArray(flights) || flights.length === 0) {
-      showMessage("No flights found. Try a different route or date.", "error");
+      showMessage(
+        "No flights found for this route and date. Try another search.",
+        "info"
+      );
       return;
     }
 
@@ -263,19 +418,29 @@
       addText(
         card,
         "h3",
-        flightValue(flight, ["flightNumber", "flightNo", "name"], "Flight")
+        flightValue(
+          flight,
+          ["flightNumber", "flightNo", "name"],
+          "Flight"
+        )
       );
 
       addText(
         card,
         "p",
-        "From: " + flightValue(flight, ["source", "origin", "from"])
+        "From: " + flightValue(
+          flight,
+          ["source", "origin", "from"]
+        )
       );
 
       addText(
         card,
         "p",
-        "To: " + flightValue(flight, ["destination", "destinationCity", "to"])
+        "To: " + flightValue(
+          flight,
+          ["destination", "destinationCity", "to"]
+        )
       );
 
       addText(
@@ -290,7 +455,10 @@
       addText(
         card,
         "p",
-        "Fare: ₹" + flightValue(flight, ["price", "fare", "ticketPrice"])
+        "Fare: ₹" + flightValue(
+          flight,
+          ["price", "fare", "ticketPrice"]
+        )
       );
 
       addText(
@@ -305,36 +473,48 @@
       const bookButton = document.createElement("button");
       bookButton.type = "button";
       bookButton.className = "btn-accent";
-      bookButton.textContent = "Book Flight";
+      bookButton.textContent = "Continue to Booking";
 
       bookButton.addEventListener("click", () => {
+        const flightId = getFlightId(flight);
+
+        if (!flightId) {
+          showMessage(
+            "This flight response has no flight ID. Booking cannot continue until the backend returns a flight ID.",
+            "error"
+          );
+          return;
+        }
+
+        const pendingFlight = {
+          flightId,
+          source: flightValue(
+            flight, ["source", "origin", "from"], ""
+          ),
+          destination: flightValue(
+            flight,
+            ["destination", "destinationCity", "to"], ""
+          ),
+          date: dateInput.value
+        };
+
+        sessionStorage.setItem(
+          "skybookPendingFlight",
+          JSON.stringify(pendingFlight)
+        );
+
+        // This is a navigation step only; it does not create a booking.
         const signedInUser = localStorage.getItem("skybookUser");
 
         if (!signedInUser) {
-          showMessage(
-            "Please sign in before booking. The login page will open now.",
-            "success"
-          );
-          sessionStorage.setItem(
-            "skybookPendingFlight",
-            JSON.stringify({
-              flightId: flight.id ?? flight.flightId ?? null,
-              source: flightValue(flight, ["source", "origin", "from"], ""),
-              destination: flightValue(
-                flight, ["destination", "destinationCity", "to"], ""
-              ),
-              date: dateInput.value
-            })
-          );
+          showMessage("Please sign in to continue.", "info");
           window.location.href = "index.html";
           return;
         }
 
-        showMessage(
-          "Flight selected. Booking API integration is not configured yet. " +
-          "No ticket has been booked.",
-          "error"
-        );
+        // Update this destination if your project uses another booking page.
+        window.location.href =
+          "booking.html?flightId=" + encodeURIComponent(String(flightId));
       });
 
       card.appendChild(bookButton);
@@ -349,8 +529,8 @@
     resultsSection.hidden = true;
     searchResults.replaceChildren();
 
-    const source = document.getElementById("source").value.trim();
-    const destination = document.getElementById("destination").value.trim();
+    const source = $("source").value.trim();
+    const destination = $("destination").value.trim();
     const date = dateInput.value;
 
     if (!source || !destination || !date) {
@@ -371,17 +551,23 @@
     searchButton.disabled = true;
     searchButton.textContent = "Searching...";
     searchLoading.hidden = false;
-    showMessage("Connecting to SkyBook backend...", "success");
+    showMessage("Connecting to SkyBook backend...", "info");
 
     try {
       const apiBase = window.SKYBOOK_API_BASE.replace(/\/+$/, "");
-      const params = new URLSearchParams({ source, destination, date });
+      const params = new URLSearchParams({
+        source,
+        destination,
+        date
+      });
 
       const response = await fetch(
         `${apiBase}/flights/search?${params.toString()}`,
         {
           method: "GET",
-          headers: { "Accept": "application/json" }
+          headers: {
+            "Accept": "application/json"
+          }
         }
       );
 
@@ -389,21 +575,30 @@
         const detail = await response.text();
         throw new Error(
           `Flight search failed (${response.status}). ` +
-          (detail || "Please check the backend.")
+          (detail || "Please check the backend configuration.")
         );
       }
 
       const data = await response.json();
+
       const flights = Array.isArray(data)
         ? data
-        : data.flights || data.content || data.data || [];
+        : Array.isArray(data.flights)
+          ? data.flights
+          : Array.isArray(data.content)
+            ? data.content
+            : Array.isArray(data.data)
+              ? data.data
+              : [];
 
       renderFlights(flights);
     } catch (error) {
       console.error("SkyBook flight search error:", error);
+
       showMessage(
         error.message ||
-        "Cannot connect to the backend. Check that the server is running and CORS is configured."
+        "Cannot connect to the backend. Check the backend URL, server status, and CORS configuration.",
+        "error"
       );
     } finally {
       searchButton.disabled = false;
@@ -411,6 +606,48 @@
       searchLoading.hidden = true;
     }
   });
+
+  // Support the existing project's authentication script if it exposes
+  // a login state in localStorage.
+  function updateNavigation() {
+    const signedInUser = localStorage.getItem("skybookUser");
+
+    $("loginLink").hidden = Boolean(signedInUser);
+    $("registerLink").hidden = Boolean(signedInUser);
+    $("userBox").hidden = !signedInUser;
+
+    if (signedInUser) {
+      try {
+        const user = JSON.parse(signedInUser);
+        $("userName").textContent =
+          user.displayName || user.name || user.email || "Signed in";
+      } catch {
+        $("userName").textContent = signedInUser;
+      }
+    }
+  }
+
+  $("logoutBtn").addEventListener("click", async () => {
+    try {
+      // If Firebase compat auth is present, sign out there too.
+      if (window.firebase && firebase.apps && firebase.apps.length) {
+        await firebase.auth().signOut();
+      }
+    } catch (error) {
+      console.error("SkyBook logout error:", error);
+    }
+
+    localStorage.removeItem("skybookUser");
+    sessionStorage.removeItem("skybookPendingFlight");
+
+    window.location.href = "index.html";
+  });
+
+  updateNavigation();
+
+  // Refresh the visible login state if auth.js updates localStorage.
+  window.addEventListener("storage", updateNavigation);
+})();
 </script>
 
 <script src="js/auth.js"></script>

@@ -10,10 +10,10 @@
 
   <style>
     .search-message {
+      display: none;
       margin: 18px 0;
       padding: 14px 16px;
       border-radius: 8px;
-      display: none;
       overflow-wrap: anywhere;
     }
 
@@ -40,32 +40,27 @@
       padding: 20px;
       border: 1px solid #e2e8f0;
       border-radius: 12px;
-      background: white;
+      background: #fff;
       box-shadow: 0 4px 15px #0000000a;
     }
 
-    .flight-card h3 {
-      margin-top: 0;
-    }
-
-    .flight-card p {
-      margin: 10px 0;
-    }
+    .flight-card h3 { margin-top: 0; }
+    .flight-card p { margin: 10px 0; }
 
     .flight-card button {
-      cursor: pointer;
       width: 100%;
       margin-top: 10px;
+      cursor: pointer;
     }
 
-    .loading {
+    .search-loading {
+      margin-top: 20px;
       text-align: center;
-      padding: 20px;
     }
 
-    #date {
-      min-width: 0;
-    }
+    #date { min-width: 0; }
+
+    [hidden] { display: none !important; }
 
     @media (max-width: 600px) {
       .nav-links {
@@ -89,20 +84,26 @@
 
     <ul class="nav-links">
       <li><a href="dashboard.html">Home</a></li>
-      <li id="bookingsLink"><a href="mybookings.html">My Bookings</a></li>
+
+      <li id="bookingsLink">
+        <a href="mybookings.html">My Bookings</a>
+      </li>
+
       <li id="adminLink" style="display:none">
         <a href="admin.html">Admin Panel</a>
       </li>
-      <li id="loginLink"><a href="login.html">Login</a></li>
+
+      <li id="loginLink">
+        <a href="index.html">Login</a>
+      </li>
+
       <li id="registerLink">
         <a href="register.html" class="btn-accent">Register</a>
       </li>
+
       <li id="userBox" style="display:none">
         <span id="userName"></span>
-        <button
-          type="button"
-          id="logoutBtn"
-          class="btn-accent"
+        <button type="button" id="logoutBtn" class="btn-accent"
           style="border:0;padding:7px 14px;border-radius:5px;font-weight:600">
           Logout
         </button>
@@ -155,11 +156,12 @@
       </form>
     </div>
 
-    <div
-      id="searchMessage"
-      class="search-message"
-      role="status"
-      aria-live="polite"></div>
+    <div id="searchMessage" class="search-message"
+      role="status" aria-live="polite"></div>
+
+    <div id="searchLoading" class="search-loading" hidden>
+      Searching available flights...
+    </div>
 
     <section id="resultsSection" hidden>
       <h2>Available Flights</h2>
@@ -169,17 +171,17 @@
     <div class="features">
       <div class="card">
         <h3>Live availability</h3>
-        <p>See available flights and fares returned by the server.</p>
+        <p>See flight fares and seat availability returned by the backend.</p>
       </div>
 
       <div class="card">
         <h3>Safe booking</h3>
-        <p>Book through the backend and follow its seat availability rules.</p>
+        <p>Submit bookings through the server to apply its seat availability rules.</p>
       </div>
 
       <div class="card">
         <h3>Manage tickets</h3>
-        <p>View your bookings and PNR details through My Bookings.</p>
+        <p>Open My Bookings to view your tickets and booking information.</p>
       </div>
     </div>
 
@@ -195,47 +197,52 @@
 </footer>
 
 <script>
-  /*
-   * Production backend URL.
-   * Keep this in sync with the API base URL expected by auth.js/search.js.
-   */
+  // SkyBook production backend.
   window.SKYBOOK_API_BASE =
     "https://skybook-backend-tksr.onrender.com/api";
 
-  // Prevent searching for a departure date in the past.
-  const departureDate = document.getElementById("date");
-  const today = new Date();
-  const localToday = [
-    today.getFullYear(),
-    String(today.getMonth() + 1).padStart(2, "0"),
-    String(today.getDate()).padStart(2, "0")
-  ].join("-");
-
-  departureDate.min = localToday;
-
+  const dateInput = document.getElementById("date");
   const searchForm = document.getElementById("searchForm");
   const searchButton = document.getElementById("searchButton");
   const searchMessage = document.getElementById("searchMessage");
+  const searchLoading = document.getElementById("searchLoading");
   const resultsSection = document.getElementById("resultsSection");
   const searchResults = document.getElementById("searchResults");
 
-  function showSearchMessage(message, type) {
+  function getLocalDate() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  dateInput.min = getLocalDate();
+
+  function showMessage(message, type = "error") {
     searchMessage.textContent = message;
     searchMessage.className = "search-message " + type;
   }
 
-  function clearSearchMessage() {
+  function clearMessage() {
     searchMessage.textContent = "";
     searchMessage.className = "search-message";
   }
 
-  function getFlightValue(flight, keys, fallback = "N/A") {
+  function flightValue(flight, keys, fallback = "Not available") {
     for (const key of keys) {
-      if (flight[key] !== undefined && flight[key] !== null) {
+      if (flight && flight[key] !== undefined && flight[key] !== null) {
         return flight[key];
       }
     }
     return fallback;
+  }
+
+  function addText(parent, tag, text) {
+    const element = document.createElement(tag);
+    element.textContent = String(text);
+    parent.appendChild(element);
+    return element;
   }
 
   function renderFlights(flights) {
@@ -243,46 +250,57 @@
     resultsSection.hidden = false;
 
     if (!Array.isArray(flights) || flights.length === 0) {
-      showSearchMessage(
-        "No flights found for this route and date. Try another search.",
-        "error"
-      );
+      showMessage("No flights found. Try a different route or date.", "error");
       return;
     }
 
-    clearSearchMessage();
+    clearMessage();
 
     flights.forEach((flight) => {
       const card = document.createElement("article");
       card.className = "flight-card";
 
-      const title = document.createElement("h3");
-      title.textContent = String(
-        getFlightValue(flight, ["flightNumber", "flightNo", "name"], "Flight")
+      addText(
+        card,
+        "h3",
+        flightValue(flight, ["flightNumber", "flightNo", "name"], "Flight")
       );
 
-      const route = document.createElement("p");
-      route.textContent =
-        String(getFlightValue(flight, ["source", "origin", "from"])) +
-        " → " +
-        String(getFlightValue(flight, ["destination", "destinationCity", "to"]));
+      addText(
+        card,
+        "p",
+        "From: " + flightValue(flight, ["source", "origin", "from"])
+      );
 
-      const time = document.createElement("p");
-      time.textContent =
-        "Departure: " +
-        String(getFlightValue(flight, ["departureTime", "departureDateTime", "departure"]));
+      addText(
+        card,
+        "p",
+        "To: " + flightValue(flight, ["destination", "destinationCity", "to"])
+      );
 
-      const fare = document.createElement("p");
-      fare.textContent =
-        "Fare: ₹" +
-        String(getFlightValue(flight, ["price", "fare", "ticketPrice"]));
+      addText(
+        card,
+        "p",
+        "Departure: " + flightValue(
+          flight,
+          ["departureTime", "departureDateTime", "departure"]
+        )
+      );
 
-      const seats = document.createElement("p");
-      seats.textContent =
-        "Available seats: " +
-        String(getFlightValue(flight, ["availableSeats", "seatsAvailable", "seatsLeft"]));
+      addText(
+        card,
+        "p",
+        "Fare: ₹" + flightValue(flight, ["price", "fare", "ticketPrice"])
+      );
 
-      card.append(title, route, time, fare, seats);
+      addText(
+        card,
+        "p",
+        "Available seats: " + flightValue(
+          flight,
+          ["availableSeats", "seatsAvailable", "seatsLeft"]
+        )
+      );
 
       const bookButton = document.createElement("button");
       bookButton.type = "button";
@@ -290,14 +308,33 @@
       bookButton.textContent = "Book Flight";
 
       bookButton.addEventListener("click", () => {
-        showSearchMessage(
-          "Flight selected. Open My Bookings or sign in before continuing. " +
-          "The booking API integration must match your backend endpoints.",
-          "success"
-        );
+        const signedInUser = localStorage.getItem("skybookUser");
 
-        // Do not create a booking until the correct backend booking
-        // endpoint and request fields have been confirmed.
+        if (!signedInUser) {
+          showMessage(
+            "Please sign in before booking. The login page will open now.",
+            "success"
+          );
+          sessionStorage.setItem(
+            "skybookPendingFlight",
+            JSON.stringify({
+              flightId: flight.id ?? flight.flightId ?? null,
+              source: flightValue(flight, ["source", "origin", "from"], ""),
+              destination: flightValue(
+                flight, ["destination", "destinationCity", "to"], ""
+              ),
+              date: dateInput.value
+            })
+          );
+          window.location.href = "index.html";
+          return;
+        }
+
+        showMessage(
+          "Flight selected. Booking API integration is not configured yet. " +
+          "No ticket has been booked.",
+          "error"
+        );
       });
 
       card.appendChild(bookButton);
@@ -307,41 +344,38 @@
 
   searchForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    clearSearchMessage();
+    clearMessage();
+
     resultsSection.hidden = true;
     searchResults.replaceChildren();
 
     const source = document.getElementById("source").value.trim();
     const destination = document.getElementById("destination").value.trim();
-    const date = departureDate.value;
+    const date = dateInput.value;
 
     if (!source || !destination || !date) {
-      showSearchMessage("Please fill in all search fields.", "error");
+      showMessage("Please complete all search fields.");
       return;
     }
 
     if (source.toLowerCase() === destination.toLowerCase()) {
-      showSearchMessage("From and To cities must be different.", "error");
+      showMessage("From and To cities must be different.");
       return;
     }
 
-    if (date < localToday) {
-      showSearchMessage("Please choose today or a future date.", "error");
+    if (date < getLocalDate()) {
+      showMessage("Please select today or a future date.");
       return;
     }
 
     searchButton.disabled = true;
     searchButton.textContent = "Searching...";
-    showSearchMessage("Searching for available flights...", "success");
+    searchLoading.hidden = false;
+    showMessage("Connecting to SkyBook backend...", "success");
 
     try {
       const apiBase = window.SKYBOOK_API_BASE.replace(/\/+$/, "");
-
-      const params = new URLSearchParams({
-        source,
-        destination,
-        date
-      });
+      const params = new URLSearchParams({ source, destination, date });
 
       const response = await fetch(
         `${apiBase}/flights/search?${params.toString()}`,
@@ -355,13 +389,11 @@
         const detail = await response.text();
         throw new Error(
           `Flight search failed (${response.status}). ` +
-          (detail || "Please try again.")
+          (detail || "Please check the backend.")
         );
       }
 
       const data = await response.json();
-
-      // Supports either a direct array or a common wrapped response.
       const flights = Array.isArray(data)
         ? data
         : data.flights || data.content || data.data || [];
@@ -369,14 +401,14 @@
       renderFlights(flights);
     } catch (error) {
       console.error("SkyBook flight search error:", error);
-      showSearchMessage(
+      showMessage(
         error.message ||
-        "Could not connect to SkyBook. Please try again later.",
-        "error"
+        "Cannot connect to the backend. Check that the server is running and CORS is configured."
       );
     } finally {
       searchButton.disabled = false;
       searchButton.textContent = "Search Flights";
+      searchLoading.hidden = true;
     }
   });
 </script>

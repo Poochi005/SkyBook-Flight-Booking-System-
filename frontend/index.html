@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -205,7 +206,6 @@
     <div class="logo">✈️</div>
 
     <h1 id="formTitle">Welcome back</h1>
-
     <p class="subtitle" id="formSubtitle">
       Sign in to continue to SkyBook
     </p>
@@ -307,6 +307,7 @@
       submitBtn.disabled = loading;
       googleBtn.disabled = loading;
       toggleLink.style.pointerEvents = loading ? "none" : "auto";
+
       submitBtn.textContent = loading
         ? "Please wait..."
         : (isSignUp ? "Create Account" : "Sign In");
@@ -315,7 +316,6 @@
     function redirectToDashboard() {
       if (redirectStarted) return;
       redirectStarted = true;
-
       window.location.replace(DASHBOARD_URL);
     }
 
@@ -353,7 +353,8 @@
           "This email uses another sign-in method."
       };
 
-      return messages[error.code] || error.message ||
+      return messages[error.code] ||
+        error.message ||
         "Authentication failed. Please try again.";
     }
 
@@ -442,9 +443,7 @@
 
       try {
         const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({
-          prompt: "select_account"
-        });
+        provider.setCustomParameters({ prompt: "select_account" });
 
         const result = await auth.signInWithPopup(provider);
 

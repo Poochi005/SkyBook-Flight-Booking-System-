@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - SkyBook</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header>
+  <nav class="navbar">
+    <a href="index.html" class="logo">&#9992; SkyBook</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li id="bookingsLink"><a href="mybookings.html">My Bookings</a></li>
+      <li id="adminLink" style="display:none"><a href="admin.html">Admin Panel</a></li>
+      <li id="loginLink"><a href="login.html">Login</a></li>
+      <li id="registerLink"><a href="register.html" class="btn-accent">Register</a></li>
+      <li id="userBox" style="display:none">
+        <span id="userName"></span>
+        <button id="logoutBtn" class="btn-accent" style="border:0;padding:7px 14px;border-radius:5px;font-weight:600">Logout</button>
+      </li>
+    </ul>
+  </nav>
+</header>
+  <main>
+    <h2>SkyBook Admin</h2>
+    <div class="tabs">
+      <button id="tabFlights" class="active">Flights</button>
+      <button id="tabBookings">All bookings</button>
+    </div>
+
+    <div id="flightsTab">
+      <form id="flightForm" class="card">
+        <h3 id="formTitle" style="margin-bottom:12px">Add a flight</h3>
+        <div class="inline-form">
+          <div><label for="flightNumber">Flight no.</label><input type="text" id="flightNumber" placeholder="AI-202" maxlength="10" required></div>
+          <div><label for="airline">Airline</label><input type="text" id="airline" placeholder="Airline" required></div>
+          <div><label for="source">From</label><input type="text" id="source" placeholder="From" required></div>
+          <div><label for="destination">To</label><input type="text" id="destination" placeholder="To" required></div>
+          <div><label for="departure">Departure</label><input type="datetime-local" id="departure" required></div>
+          <div><label for="arrival">Arrival</label><input type="datetime-local" id="arrival" required></div>
+          <div><label for="price">Fare (Rs.)</label><input type="number" id="price" placeholder="Fare (Rs.)" min="1" required></div>
+          <div><label for="seats">Total seats</label><input type="number" id="seats" placeholder="Total seats" min="1" required></div>
+          <div class="actions">
+            <button type="submit" id="saveBtn" class="btn-primary">+ Add flight</button>
+            <button type="button" id="cancelEdit" class="btn-outline" style="display:none">Cancel edit</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr><th>Flight</th><th>Airline</th><th>Route</th><th>Departure</th><th>Fare</th><th>Seats (free / total)</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="flightRows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="bookingsTab" style="display:none">
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr><th>PNR</th><th>Passenger account</th><th>Flight</th><th>Route</th><th>Passengers</th><th>Amount</th><th>Payment</th><th>Status</th></tr>
+          </thead>
+          <tbody id="allBookingRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/admin.js"></script>
+<footer><p>&copy; 2026 SkyBook | Flight Ticket Booking System</p></footer>
+</body></html>

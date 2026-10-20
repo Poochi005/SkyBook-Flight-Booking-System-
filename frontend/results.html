@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Available Flights - SkyBook</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header>
+  <nav class="navbar">
+    <a href="index.html" class="logo">&#9992; SkyBook</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li id="bookingsLink"><a href="mybookings.html">My Bookings</a></li>
+      <li id="adminLink" style="display:none"><a href="admin.html">Admin Panel</a></li>
+      <li id="loginLink"><a href="login.html">Login</a></li>
+      <li id="registerLink"><a href="register.html" class="btn-accent">Register</a></li>
+      <li id="userBox" style="display:none">
+        <span id="userName"></span>
+        <button id="logoutBtn" class="btn-accent" style="border:0;padding:7px 14px;border-radius:5px;font-weight:600">Logout</button>
+      </li>
+    </ul>
+  </nav>
+</header>
+  <main>
+    <h2 id="routeTitle"></h2>
+    <p id="info" class="muted" style="margin-bottom:14px"></p>
+    <!-- search.js fills this container with one card per flight -->
+    <div id="flightList" class="flight-list"></div>
+    <p><a href="index.html">&larr; New search</a></p>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/search.js"></script>
+<footer><p>&copy; 2026 SkyBook | Flight Ticket Booking System</p></footer>
+</body></html>

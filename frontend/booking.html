@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Passenger Details and Payment - SkyBook</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header>
+  <nav class="navbar">
+    <a href="index.html" class="logo">&#9992; SkyBook</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li id="bookingsLink"><a href="mybookings.html">My Bookings</a></li>
+      <li id="adminLink" style="display:none"><a href="admin.html">Admin Panel</a></li>
+      <li id="loginLink"><a href="login.html">Login</a></li>
+      <li id="registerLink"><a href="register.html" class="btn-accent">Register</a></li>
+      <li id="userBox" style="display:none">
+        <span id="userName"></span>
+        <button id="logoutBtn" class="btn-accent" style="border:0;padding:7px 14px;border-radius:5px;font-weight:600">Logout</button>
+      </li>
+    </ul>
+  </nav>
+</header>
+  <main>
+    <div id="bookingArea">
+      <h2>Passenger details and payment</h2>
+      <div class="layout">
+        <form id="bookingForm" onsubmit="return false">
+          <div id="passengerList"></div>
+          <button type="button" id="addPassenger" class="btn-outline" style="margin-bottom:14px">+ Add passenger</button>
+
+          <fieldset class="card radio-row">
+            <legend>Payment method (simulated)</legend>
+            <label><input type="radio" name="method" value="UPI" checked> UPI</label>
+            <label><input type="radio" name="method" value="CARD"> Card</label>
+            <label><input type="radio" name="method" value="NETBANKING"> Net Banking</label>
+          </fieldset>
+        </form>
+
+        <aside class="card summary">
+          <h3>Fare summary</h3>
+          <p><span id="flightInfo"></span></p>
+          <p>Fare per passenger: <span id="fare"></span></p>
+          <p>Passengers: <span id="count">1</span></p>
+          <h3>Total: <span id="total"></span></h3>
+          <button type="button" id="payBtn" class="btn-success" onclick="confirmBooking()">Pay and Confirm Booking</button>
+        </aside>
+      </div>
+    </div>
+
+    <!-- Ticket shown after a successful booking -->
+    <section id="ticket" style="display:none" class="card">
+      <p class="success">&#10004; Payment successful. Your booking is confirmed.</p>
+      <h2>PNR: <span id="pnr"></span></h2>
+      <p id="ticketFlight"></p>
+      <p id="ticketAmount" class="muted" style="margin-bottom:12px"></p>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>Passenger</th><th>Age</th><th>Gender</th><th>Seat</th></tr></thead>
+          <tbody id="ticketRows"></tbody>
+        </table>
+      </div>
+      <a class="btn-primary" href="mybookings.html">View my bookings</a>
+      <button class="btn-outline" onclick="window.print()">Print ticket</button>
+    </section>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/booking.js"></script>
+<footer><p>&copy; 2026 SkyBook | Flight Ticket Booking System</p></footer>
+</body></html>

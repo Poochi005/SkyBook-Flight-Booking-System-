@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkyBook - Flight Ticket Booking</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header>
+  <nav class="navbar">
+    <a href="index.html" class="logo">&#9992; SkyBook</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li id="bookingsLink"><a href="mybookings.html">My Bookings</a></li>
+      <li id="adminLink" style="display:none"><a href="admin.html">Admin Panel</a></li>
+      <li id="loginLink"><a href="login.html">Login</a></li>
+      <li id="registerLink"><a href="register.html" class="btn-accent">Register</a></li>
+      <li id="userBox" style="display:none">
+        <span id="userName"></span>
+        <button id="logoutBtn" class="btn-accent" style="border:0;padding:7px 14px;border-radius:5px;font-weight:600">Logout</button>
+      </li>
+    </ul>
+  </nav>
+</header>
+  <main style="max-width:none;padding:0">
+    <section class="hero">
+      <div>
+        <h1>Find your flight and book in minutes</h1>
+        <p>Search by city and date, see live seat availability and fares.</p>
+      </div>
+    </section>
+
+    <section class="search-wrap">
+      <div class="search-box">
+        <form id="searchForm">
+          <div class="field">
+            <label for="source">From</label>
+            <input type="text" id="source" placeholder="Chennai" required>
+          </div>
+          <div class="field">
+            <label for="destination">To</label>
+            <input type="text" id="destination" placeholder="Delhi" required>
+          </div>
+          <div class="field">
+            <label for="date">Departure date</label>
+            <input type="date" id="date" required>
+          </div>
+          <button type="submit" class="btn-accent">Search Flights</button>
+        </form>
+      </div>
+
+      <div class="features">
+        <div class="card"><h3>Live availability</h3><p>See the fare and the number of seats left for every flight.</p></div>
+        <div class="card"><h3>Safe booking</h3><p>Seats are reserved in one transaction, so a seat is never sold twice.</p></div>
+        <div class="card"><h3>Manage tickets</h3><p>Get a PNR instantly and view or cancel your bookings any time.</p></div>
+      </div>
+      <p class="muted" style="margin-top:14px">Sample routes: Chennai &rarr; Delhi, Chennai &rarr; Mumbai, Delhi &rarr; Chennai, Bengaluru &rarr; Chennai, Mumbai &rarr; Chennai.</p>
+    </section>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/search.js"></script>
+<footer><p>&copy; 2026 SkyBook | Flight Ticket Booking System</p></footer>
+</body></html>

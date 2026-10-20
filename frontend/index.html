@@ -1,65 +1,743 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SkyBook - Flight Ticket Booking</title>
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Firebase</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-card {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 16px;
+            padding: 36px 32px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.22);
+        }
+        
+        .logo {
+            width: 65px;
+            height: 65px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            background: #f1f3f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+        
+        h1 {
+            margin: 0 0 8px;
+            text-align: center;
+            color: #222;
+            font-size: 25px;
+        }
+        
+        .subtitle {
+            margin: 0 0 25px;
+            text-align: center;
+            color: #777;
+            font-size: 14px;
+        }
+        
+        .field {
+            margin-bottom: 16px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 7px;
+            color: #444;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #d8d8e0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        input:focus {
+            border-color: #764ba2;
+            box-shadow: 0 0 0 2px rgba(118, 75, 162, 0.1);
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #764ba2;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background: #653d8e;
+        }
+        
+        .btn-primary:disabled {
+            background: #b7a4cf;
+            cursor: not-allowed;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 22px 0;
+            color: #aaa;
+            font-size: 12px;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #e5e5ea;
+        }
+        
+        .divider::before {
+            margin-right: 10px;
+        }
+        
+        .divider::after {
+            margin-left: 10px;
+        }
+        
+        .btn-google {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #d8d8e0;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-google:hover {
+            background: #f7f7f7;
+        }
+        
+        .google-icon {
+            width: 19px;
+            height: 19px;
+        }
+        
+        .toggle-text {
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+            margin-top: 20px;
+        }
+        
+        .toggle-text a {
+            color: #764ba2;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .toggle-text a:hover {
+            text-decoration: underline;
+        }
+        
+        .message {
+            display: none;
+            font-size: 13px;
+            padding: 11px 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+        
+        .message.error {
+            display: block;
+            background: #fdecea;
+            color: #b3261e;
+        }
+        
+        .message.success {
+            display: block;
+            background: #e6f4ea;
+            color: #1e7e34;
+        }
+    </style>
+
+
 </head>
+
 <body>
-<header>
-  <nav class="navbar">
-    <a href="index.html" class="logo">&#9992; SkyBook</a>
-    <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li id="bookingsLink"><a href="mybookings.html">My Bookings</a></li>
-      <li id="adminLink" style="display:none"><a href="admin.html">Admin Panel</a></li>
-      <li id="loginLink"><a href="login.html">Login</a></li>
-      <li id="registerLink"><a href="register.html" class="btn-accent">Register</a></li>
-      <li id="userBox" style="display:none">
-        <span id="userName"></span>
-        <button id="logoutBtn" class="btn-accent" style="border:0;padding:7px 14px;border-radius:5px;font-weight:600">Logout</button>
-      </li>
-    </ul>
-  </nav>
-</header>
-  <main style="max-width:none;padding:0">
-    <section class="hero">
-      <div>
-        <h1>Find your flight and book in minutes</h1>
-        <p>Search by city and date, see live seat availability and fares.</p>
-      </div>
-    </section>
 
-    <section class="search-wrap">
-      <div class="search-box">
-        <form id="searchForm">
-          <div class="field">
-            <label for="source">From</label>
-            <input type="text" id="source" placeholder="Chennai" required>
-          </div>
-          <div class="field">
-            <label for="destination">To</label>
-            <input type="text" id="destination" placeholder="Delhi" required>
-          </div>
-          <div class="field">
-            <label for="date">Departure date</label>
-            <input type="date" id="date" required>
-          </div>
-          <button type="submit" class="btn-accent">Search Flights</button>
+
+    <div class="login-card">
+
+        <div class="logo">🔐</div>
+
+        <h1 id="formTitle">Welcome back</h1>
+
+        <p class="subtitle" id="formSubtitle">
+            Sign in to continue
+        </p>
+
+        <div class="message" id="message"></div>
+
+        <form id="authForm">
+
+            <div class="field">
+                <label for="email">Email</label>
+
+                <input type="email" id="email" placeholder="you@example.com" required>
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+
+                <input type="password" id="password" placeholder="Enter password" required minlength="6">
+            </div>
+
+            <button type="submit" class="btn-primary" id="submitBtn">
+            Sign In
+        </button>
+
         </form>
-      </div>
 
-      <div class="features">
-        <div class="card"><h3>Live availability</h3><p>See the fare and the number of seats left for every flight.</p></div>
-        <div class="card"><h3>Safe booking</h3><p>Seats are reserved in one transaction, so a seat is never sold twice.</p></div>
-        <div class="card"><h3>Manage tickets</h3><p>Get a PNR instantly and view or cancel your bookings any time.</p></div>
-      </div>
-      <p class="muted" style="margin-top:14px">Sample routes: Chennai &rarr; Delhi, Chennai &rarr; Mumbai, Delhi &rarr; Chennai, Bengaluru &rarr; Chennai, Mumbai &rarr; Chennai.</p>
-    </section>
-  </main>
+        <div class="divider">or</div>
 
-  <script src="js/auth.js"></script>
-  <script src="js/search.js"></script>
-<footer><p>&copy; 2026 SkyBook | Flight Ticket Booking System</p></footer>
-</body></html>
+        <!-- GOOGLE LOGIN -->
+        <button type="button" class="btn-google" id="googleBtn">
+
+        <svg
+            class="google-icon"
+            viewBox="0 0 18 18">
+
+            <path
+                fill="#4285F4"
+                d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 01-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62z"/>
+
+            <path
+                fill="#34A853"
+                d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.96v2.33A9 9 0 009 18z"/>
+
+            <path
+                fill="#FBBC05"
+                d="M3.95 10.7A5.4 5.4 0 013.68 9c0-.59.1-1.17.27-1.7V4.97H.96A9 9 0 000 9c0 1.45.35 2.83.96 4.03l2.99-2.33z"/>
+
+            <path
+                fill="#EA4335"
+                d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 00.96 4.97l2.99 2.33C4.66 5.17 6.65 3.58 9 3.58z"/>
+        </svg>
+
+        Continue with Google
+
+    </button>
+
+        <p class="toggle-text">
+
+            <span id="toggleQuestion">
+            Don't have an account?
+        </span>
+
+            <a id="toggleLink">
+            Sign up
+        </a>
+
+        </p>
+
+    </div>
+
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+
+
+    <script>
+        // ==========================================
+        // FIREBASE CONFIG
+        // ==========================================
+
+        const firebaseConfig = {
+
+            apiKey: "AIzaSyAx0gRlPE9rQszsqGIM-msVyU5V-ZqzqFY",
+
+            authDomain: "login-page-bf89d.firebaseapp.com",
+
+            projectId: "login-page-bf89d",
+
+            storageBucket: "login-page-bf89d.firebasestorage.app",
+
+            messagingSenderId: "565031477506",
+
+            appId: "1:565031477506:web:71197287838c5ce8e7221b",
+
+            measurementId: "G-TWGTWRKY56"
+        };
+
+
+        // ==========================================
+        // INITIALIZE FIREBASE
+        // ==========================================
+
+        firebase.initializeApp(firebaseConfig);
+
+        const auth = firebase.auth();
+
+
+        // ==========================================
+        // VARIABLES
+        // ==========================================
+
+        let isSignUp = false;
+
+        const form =
+            document.getElementById("authForm");
+
+        const emailInput =
+            document.getElementById("email");
+
+        const passwordInput =
+            document.getElementById("password");
+
+        const submitBtn =
+            document.getElementById("submitBtn");
+
+        const googleBtn =
+            document.getElementById("googleBtn");
+
+        const toggleLink =
+            document.getElementById("toggleLink");
+
+        const toggleQuestion =
+            document.getElementById("toggleQuestion");
+
+        const formTitle =
+            document.getElementById("formTitle");
+
+        const formSubtitle =
+            document.getElementById("formSubtitle");
+
+        const messageEl =
+            document.getElementById("message");
+
+
+        // ==========================================
+        // SHOW MESSAGE
+        // ==========================================
+
+        function showMessage(text, type) {
+
+            messageEl.textContent = text;
+
+            messageEl.className =
+                "message " + type;
+        }
+
+
+        function clearMessage() {
+
+            messageEl.textContent = "";
+
+            messageEl.className = "message";
+        }
+
+
+        // ==========================================
+        // LOADING
+        // ==========================================
+
+        function setLoading(loading) {
+
+            submitBtn.disabled = loading;
+
+            if (loading) {
+
+                submitBtn.textContent =
+                    "Please wait...";
+
+            } else {
+
+                submitBtn.textContent =
+                    isSignUp ? "Sign Up" : "Sign In";
+            }
+        }
+
+
+        // ==========================================
+        // SIGN IN / SIGN UP TOGGLE
+        // ==========================================
+
+        toggleLink.addEventListener("click", function() {
+
+            isSignUp = !isSignUp;
+
+            clearMessage();
+
+            if (isSignUp) {
+
+                formTitle.textContent =
+                    "Create an account";
+
+                formSubtitle.textContent =
+                    "Sign up to get started";
+
+                submitBtn.textContent =
+                    "Sign Up";
+
+                toggleQuestion.textContent =
+                    "Already have an account?";
+
+                toggleLink.textContent =
+                    "Sign in";
+
+            } else {
+
+                formTitle.textContent =
+                    "Welcome back";
+
+                formSubtitle.textContent =
+                    "Sign in to continue";
+
+                submitBtn.textContent =
+                    "Sign In";
+
+                toggleQuestion.textContent =
+                    "Don't have an account?";
+
+                toggleLink.textContent =
+                    "Sign up";
+            }
+
+        });
+
+
+        // ==========================================
+        // EMAIL LOGIN / SIGNUP
+        // ==========================================
+
+        form.addEventListener("submit", async function(e) {
+
+            e.preventDefault();
+
+            clearMessage();
+
+            setLoading(true);
+
+            const email =
+                emailInput.value.trim();
+
+            const password =
+                passwordInput.value;
+
+            try {
+
+                if (isSignUp) {
+
+                    // CREATE ACCOUNT
+
+                    const result =
+                        await auth.createUserWithEmailAndPassword(
+                            email,
+                            password
+                        );
+
+                    showMessage(
+                        "Account created successfully!",
+                        "success"
+                    );
+
+                    console.log(
+                        "New user:",
+                        result.user.email
+                    );
+
+                } else {
+
+                    // SIGN IN
+
+                    const result =
+                        await auth.signInWithEmailAndPassword(
+                            email,
+                            password
+                        );
+
+                    showMessage(
+                        "Signed in successfully!",
+                        "success"
+                    );
+
+                    console.log(
+                        "Logged in:",
+                        result.user.email
+                    );
+                }
+
+            } catch (error) {
+
+                console.error(error);
+
+                let message =
+                    error.message;
+
+                if (
+                    error.code ===
+                    "auth/email-already-in-use"
+                ) {
+
+                    message =
+                        "This email is already registered.";
+
+                } else if (
+                    error.code ===
+                    "auth/invalid-email"
+                ) {
+
+                    message =
+                        "Please enter a valid email.";
+
+                } else if (
+                    error.code ===
+                    "auth/invalid-credential"
+                ) {
+
+                    message =
+                        "Invalid email or password.";
+
+                } else if (
+                    error.code ===
+                    "auth/weak-password"
+                ) {
+
+                    message =
+                        "Password must be at least 6 characters.";
+                }
+
+                showMessage(
+                    message,
+                    "error"
+                );
+
+            } finally {
+
+                setLoading(false);
+            }
+
+        });
+
+
+        // ==========================================
+        // GOOGLE LOGIN
+        // ==========================================
+
+        googleBtn.addEventListener(
+            "click",
+            async function() {
+
+                clearMessage();
+
+                googleBtn.disabled = true;
+
+                googleBtn.textContent =
+                    "Connecting to Google...";
+
+                try {
+
+                    const provider =
+                        new firebase.auth.GoogleAuthProvider();
+
+                    provider.setCustomParameters({
+                        prompt: "select_account"
+                    });
+
+
+                    const result =
+                        await auth.signInWithPopup(
+                            provider
+                        );
+
+
+                    const user =
+                        result.user;
+
+
+                    console.log(
+                        "Google Login Success"
+                    );
+
+                    console.log(
+                        "Name:",
+                        user.displayName
+                    );
+
+                    console.log(
+                        "Email:",
+                        user.email
+                    );
+
+                    console.log(
+                        "Photo:",
+                        user.photoURL
+                    );
+
+
+                    showMessage(
+                        "Google login successful! Welcome " +
+                        (user.displayName || user.email),
+                        "success"
+                    );
+
+
+                    // Redirect after successful login
+                    // window.location.href = "dashboard.html";
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Google Login Error:",
+                        error
+                    );
+
+                    let message =
+                        error.message;
+
+
+                    if (
+                        error.code ===
+                        "auth/popup-closed-by-user"
+                    ) {
+
+                        message =
+                            "Google login window was closed.";
+
+                    } else if (
+                        error.code ===
+                        "auth/popup-blocked"
+                    ) {
+
+                        message =
+                            "Popup was blocked. Please allow popups for this site.";
+
+                    } else if (
+                        error.code ===
+                        "auth/unauthorized-domain"
+                    ) {
+
+                        message =
+                            "This website domain is not authorized in Firebase.";
+
+                    } else if (
+                        error.code ===
+                        "auth/account-exists-with-different-credential"
+                    ) {
+
+                        message =
+                            "An account already exists with this email using another login method.";
+                    }
+
+
+                    showMessage(
+                        message,
+                        "error"
+                    );
+
+
+                } finally {
+
+                    googleBtn.disabled = false;
+
+                    googleBtn.innerHTML = `
+                    <svg
+                        class="google-icon"
+                        viewBox="0 0 18 18">
+
+                        <path
+                            fill="#4285F4"
+                            d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 01-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62z"/>
+
+                        <path
+                            fill="#34A853"
+                            d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.96v2.33A9 9 0 009 18z"/>
+
+                        <path
+                            fill="#FBBC05"
+                            d="M3.95 10.7A5.4 5.4 0 013.68 9c0-.59.1-1.17.27-1.7V4.97H.96A9 9 0 000 9c0 1.45.35 2.83.96 4.03l2.99-2.33z"/>
+
+                        <path
+                            fill="#EA4335"
+                            d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 00.96 4.97l2.99 2.33C4.66 5.17 6.65 3.58 9 3.58z"/>
+                    </svg>
+
+                    Continue with Google
+                `;
+                }
+
+            }
+        );
+
+
+        // ==========================================
+        // AUTH STATE
+        // ==========================================
+
+        auth.onAuthStateChanged(function(user) {
+
+            if (user) {
+
+                console.log(
+                    "Current logged in user:"
+                );
+
+                console.log(
+                    "Email:",
+                    user.email
+                );
+
+                console.log(
+                    "Display Name:",
+                    user.displayName
+                );
+
+                console.log(
+                    "UID:",
+                    user.uid
+                );
+            }
+
+        });
+    </script>
+
+
+</body>
+
+</html>

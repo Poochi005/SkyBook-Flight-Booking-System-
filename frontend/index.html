@@ -79,10 +79,7 @@
       box-shadow: 0 0 0 3px #6654dc18;
     }
 
-    button {
-      font: inherit;
-      cursor: pointer;
-    }
+    button { font: inherit; cursor: pointer; }
 
     button:disabled {
       opacity: .65;
@@ -110,7 +107,8 @@
       font-size: 12px;
     }
 
-    .divider::before, .divider::after {
+    .divider::before,
+    .divider::after {
       content: "";
       height: 1px;
       flex: 1;
@@ -132,7 +130,6 @@
     }
 
     .btn-google:hover:not(:disabled) { background: #f8f8fc; }
-
     .google-icon { width: 19px; height: 19px; }
 
     .toggle-text {
@@ -206,20 +203,17 @@
       <div class="field">
         <label for="email">Email address</label>
         <input id="email" name="email" type="email"
-               placeholder="you@example.com" autocomplete="email"
-               required>
+          placeholder="you@example.com" autocomplete="email" required>
       </div>
 
       <div class="field">
         <label for="password">Password</label>
         <input id="password" name="password" type="password"
-               placeholder="Enter password" autocomplete="current-password"
-               minlength="6" required>
+          placeholder="Enter password" autocomplete="current-password"
+          minlength="6" required>
       </div>
 
-      <button type="submit" class="btn-primary" id="submitBtn">
-        Sign In
-      </button>
+      <button type="submit" class="btn-primary" id="submitBtn">Sign In</button>
     </form>
 
     <div class="divider">OR</div>
@@ -239,14 +233,13 @@
       <a href="#" id="toggleLink">Sign up</a>
     </p>
 
-    <a href="./index.html" class="back-link">← Back to SkyBook</a>
+    <a href="dashboard.html" class="back-link">← Back to SkyBook Home</a>
   </main>
 
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 
   <script>
-    // Firebase Web App configuration from your Firebase project.
     const firebaseConfig = {
       apiKey: "AIzaSyAx0gRlPE9rQszsqGIM-msVyU5V-ZqzqFY",
       authDomain: "login-page-bf89d.firebaseapp.com",
@@ -270,6 +263,7 @@
 
     let isSignUp = false;
     let auth = null;
+    let redirecting = false;
 
     function showMessage(text, type = "info") {
       messageEl.textContent = text;
@@ -291,7 +285,8 @@
     }
 
     function readableAuthError(error) {
-      console.error("Authentication error:", error);
+      console.error("Firebase authentication error:", error);
+
       const messages = {
         "auth/email-already-in-use": "This email is already registered. Please sign in.",
         "auth/invalid-email": "Please enter a valid email address.",
@@ -301,29 +296,41 @@
         "auth/weak-password": "Choose a password with at least 6 characters.",
         "auth/too-many-requests": "Too many attempts. Please wait and try again.",
         "auth/network-request-failed": "Network error. Check your internet connection.",
-        "auth/operation-not-allowed": "This sign-in method is not enabled in Firebase Console.",
+        "auth/operation-not-allowed": "Enable this sign-in method in Firebase Console.",
         "auth/unauthorized-domain": "Add poochi005.github.io to Firebase Authorized domains.",
         "auth/popup-blocked": "Your browser blocked the Google sign-in popup.",
         "auth/popup-closed-by-user": "The Google sign-in window was closed.",
         "auth/cancelled-popup-request": "Another sign-in popup is already open.",
-        "auth/account-exists-with-different-credential": "This email is registered using another sign-in method."
+        "auth/account-exists-with-different-credential": "This email uses another sign-in method."
       };
 
-      return messages[error.code] || error.message || "Sign-in failed. Please try again.";
+      return messages[error.code] || error.message || "Authentication failed. Please try again.";
     }
 
     function updateMode() {
       clearMessage();
+
       formTitle.textContent = isSignUp ? "Create an account" : "Welcome back";
       formSubtitle.textContent = isSignUp
         ? "Sign up to start using SkyBook"
         : "Sign in to continue to SkyBook";
+
       toggleQuestion.textContent = isSignUp
         ? "Already have an account?"
         : "Don't have an account?";
+
       toggleLink.textContent = isSignUp ? "Sign in" : "Sign up";
       passwordInput.autocomplete = isSignUp ? "new-password" : "current-password";
       submitBtn.textContent = isSignUp ? "Create Account" : "Sign In";
+    }
+
+    function goToDashboard() {
+      if (redirecting) return;
+      redirecting = true;
+      showMessage("Login successful! Opening SkyBook dashboard...", "success");
+
+      // index.html and dashboard.html are in the same frontend folder.
+      window.location.replace(new URL("dashboard.html", window.location.href).href);
     }
 
     toggleLink.addEventListener("click", function(event) {
@@ -337,7 +344,7 @@
       clearMessage();
 
       if (!auth) {
-        showMessage("Firebase did not initialize. Check the Firebase configuration and reload.", "error");
+        showMessage("Firebase did not initialize. Check your Firebase configuration.", "error");
         return;
       }
 
@@ -347,24 +354,15 @@
       setLoading(true);
 
       try {
-        let result;
-
         if (isSignUp) {
-          result = await auth.createUserWithEmailAndPassword(email, password);
-          showMessage("Account created successfully!", "success");
+          await auth.createUserWithEmailAndPassword(email, password);
         } else {
-          result = await auth.signInWithEmailAndPassword(email, password);
-          showMessage("Login successful!", "success");
+          await auth.signInWithEmailAndPassword(email, password);
         }
 
-        console.log("Firebase user:", result.user.uid, result.user.email);
-
-        // Keep this page open until you choose the correct destination.
-        // Firebase login does not automatically log the user into the SkyBook
-        // Spring Boot backend. Backend integration may still be required.
+        goToDashboard();
       } catch (error) {
         showMessage(readableAuthError(error), "error");
-      } finally {
         setLoading(false);
       }
     });
@@ -373,30 +371,21 @@
       clearMessage();
 
       if (!auth) {
-        showMessage("Firebase did not initialize. Check the Firebase configuration and reload.", "error");
+        showMessage("Firebase did not initialize. Check your Firebase configuration.", "error");
         return;
       }
 
-      googleBtn.disabled = true;
-      submitBtn.disabled = true;
+      setLoading(true);
 
       try {
         const provider = new firebase.auth.GoogleAuthProvider();
         provider.setCustomParameters({ prompt: "select_account" });
 
-        const result = await auth.signInWithPopup(provider);
-        showMessage(
-          "Google login successful! Welcome " +
-          (result.user.displayName || result.user.email) + ".",
-          "success"
-        );
-
-        console.log("Google user:", result.user.uid, result.user.email);
+        await auth.signInWithPopup(provider);
+        goToDashboard();
       } catch (error) {
         showMessage(readableAuthError(error), "error");
-      } finally {
-        googleBtn.disabled = false;
-        submitBtn.disabled = false;
+        setLoading(false);
       }
     });
 
@@ -408,16 +397,17 @@
       auth = firebase.auth();
 
       auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-        .catch(error => console.error("Persistence error:", error));
+        .catch(error => console.error("Firebase persistence error:", error));
 
       auth.onAuthStateChanged(function(user) {
-        if (user) {
-          console.log("Signed-in Firebase user:", user.email, user.uid);
+        // If the user is already signed in, go straight to the dashboard.
+        if (user && !redirecting) {
+          goToDashboard();
         }
       });
     } catch (error) {
       console.error("Firebase initialization error:", error);
-      showMessage("Firebase initialization failed. Check your Firebase project settings.", "error");
+      showMessage("Firebase initialization failed. Check project settings.", "error");
     }
   </script>
 </body>

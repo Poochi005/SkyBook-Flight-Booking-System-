@@ -1,65 +1,387 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1b35">
   <title>SkyBook - Flight Ticket Booking</title>
   <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .search-message {
+      margin: 18px 0;
+      padding: 14px 16px;
+      border-radius: 8px;
+      display: none;
+      overflow-wrap: anywhere;
+    }
+
+    .search-message.error {
+      display: block;
+      background: #fff0f0;
+      color: #a32020;
+    }
+
+    .search-message.success {
+      display: block;
+      background: #eaf8ef;
+      color: #176b36;
+    }
+
+    .search-results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .flight-card {
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 4px 15px #0000000a;
+    }
+
+    .flight-card h3 {
+      margin-top: 0;
+    }
+
+    .flight-card p {
+      margin: 10px 0;
+    }
+
+    .flight-card button {
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+    }
+
+    #date {
+      min-width: 0;
+    }
+
+    @media (max-width: 600px) {
+      .nav-links {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      #searchForm {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 <header>
   <nav class="navbar">
-    <a href="index.html" class="logo">&#9992; SkyBook</a>
+    <a href="dashboard.html" class="logo">&#9992; SkyBook</a>
+
     <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
+      <li><a href="dashboard.html">Home</a></li>
       <li id="bookingsLink"><a href="mybookings.html">My Bookings</a></li>
-      <li id="adminLink" style="display:none"><a href="admin.html">Admin Panel</a></li>
+      <li id="adminLink" style="display:none">
+        <a href="admin.html">Admin Panel</a>
+      </li>
       <li id="loginLink"><a href="login.html">Login</a></li>
-      <li id="registerLink"><a href="register.html" class="btn-accent">Register</a></li>
+      <li id="registerLink">
+        <a href="register.html" class="btn-accent">Register</a>
+      </li>
       <li id="userBox" style="display:none">
         <span id="userName"></span>
-        <button id="logoutBtn" class="btn-accent" style="border:0;padding:7px 14px;border-radius:5px;font-weight:600">Logout</button>
+        <button
+          type="button"
+          id="logoutBtn"
+          class="btn-accent"
+          style="border:0;padding:7px 14px;border-radius:5px;font-weight:600">
+          Logout
+        </button>
       </li>
     </ul>
   </nav>
 </header>
-  <main style="max-width:none;padding:0">
-    <section class="hero">
-      <div>
-        <h1>Find your flight and book in minutes</h1>
-        <p>Search by city and date, see live seat availability and fares.</p>
-      </div>
+
+<main style="max-width:none;padding:0">
+  <section class="hero">
+    <div>
+      <h1>Find your flight and book in minutes</h1>
+      <p>Search by city and date, see flight availability and fares.</p>
+    </div>
+  </section>
+
+  <section class="search-wrap">
+    <div class="search-box">
+      <form id="searchForm">
+        <div class="field">
+          <label for="source">From</label>
+          <input
+            type="text"
+            id="source"
+            name="source"
+            placeholder="Chennai"
+            autocomplete="off"
+            required>
+        </div>
+
+        <div class="field">
+          <label for="destination">To</label>
+          <input
+            type="text"
+            id="destination"
+            name="destination"
+            placeholder="Delhi"
+            autocomplete="off"
+            required>
+        </div>
+
+        <div class="field">
+          <label for="date">Departure date</label>
+          <input type="date" id="date" name="date" required>
+        </div>
+
+        <button type="submit" class="btn-accent" id="searchButton">
+          Search Flights
+        </button>
+      </form>
+    </div>
+
+    <div
+      id="searchMessage"
+      class="search-message"
+      role="status"
+      aria-live="polite"></div>
+
+    <section id="resultsSection" hidden>
+      <h2>Available Flights</h2>
+      <div id="searchResults" class="search-results"></div>
     </section>
 
-    <section class="search-wrap">
-      <div class="search-box">
-        <form id="searchForm">
-          <div class="field">
-            <label for="source">From</label>
-            <input type="text" id="source" placeholder="Chennai" required>
-          </div>
-          <div class="field">
-            <label for="destination">To</label>
-            <input type="text" id="destination" placeholder="Delhi" required>
-          </div>
-          <div class="field">
-            <label for="date">Departure date</label>
-            <input type="date" id="date" required>
-          </div>
-          <button type="submit" class="btn-accent">Search Flights</button>
-        </form>
+    <div class="features">
+      <div class="card">
+        <h3>Live availability</h3>
+        <p>See available flights and fares returned by the server.</p>
       </div>
 
-      <div class="features">
-        <div class="card"><h3>Live availability</h3><p>See the fare and the number of seats left for every flight.</p></div>
-        <div class="card"><h3>Safe booking</h3><p>Seats are reserved in one transaction, so a seat is never sold twice.</p></div>
-        <div class="card"><h3>Manage tickets</h3><p>Get a PNR instantly and view or cancel your bookings any time.</p></div>
+      <div class="card">
+        <h3>Safe booking</h3>
+        <p>Book through the backend and follow its seat availability rules.</p>
       </div>
-      <p class="muted" style="margin-top:14px">Sample routes: Chennai &rarr; Delhi, Chennai &rarr; Mumbai, Delhi &rarr; Chennai, Bengaluru &rarr; Chennai, Mumbai &rarr; Chennai.</p>
-    </section>
-  </main>
 
-  <script src="js/auth.js"></script>
-  <script src="js/search.js"></script>
-<footer><p>&copy; 2026 SkyBook | Flight Ticket Booking System</p></footer>
-</body></html>
+      <div class="card">
+        <h3>Manage tickets</h3>
+        <p>View your bookings and PNR details through My Bookings.</p>
+      </div>
+    </div>
+
+    <p class="muted" style="margin-top:14px">
+      Sample routes: Chennai → Delhi, Chennai → Mumbai,
+      Delhi → Chennai, Bengaluru → Chennai, Mumbai → Chennai.
+    </p>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2026 SkyBook | Flight Ticket Booking System</p>
+</footer>
+
+<script>
+  /*
+   * Production backend URL.
+   * Keep this in sync with the API base URL expected by auth.js/search.js.
+   */
+  window.SKYBOOK_API_BASE =
+    "https://skybook-backend-tksr.onrender.com/api";
+
+  // Prevent searching for a departure date in the past.
+  const departureDate = document.getElementById("date");
+  const today = new Date();
+  const localToday = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, "0"),
+    String(today.getDate()).padStart(2, "0")
+  ].join("-");
+
+  departureDate.min = localToday;
+
+  const searchForm = document.getElementById("searchForm");
+  const searchButton = document.getElementById("searchButton");
+  const searchMessage = document.getElementById("searchMessage");
+  const resultsSection = document.getElementById("resultsSection");
+  const searchResults = document.getElementById("searchResults");
+
+  function showSearchMessage(message, type) {
+    searchMessage.textContent = message;
+    searchMessage.className = "search-message " + type;
+  }
+
+  function clearSearchMessage() {
+    searchMessage.textContent = "";
+    searchMessage.className = "search-message";
+  }
+
+  function getFlightValue(flight, keys, fallback = "N/A") {
+    for (const key of keys) {
+      if (flight[key] !== undefined && flight[key] !== null) {
+        return flight[key];
+      }
+    }
+    return fallback;
+  }
+
+  function renderFlights(flights) {
+    searchResults.replaceChildren();
+    resultsSection.hidden = false;
+
+    if (!Array.isArray(flights) || flights.length === 0) {
+      showSearchMessage(
+        "No flights found for this route and date. Try another search.",
+        "error"
+      );
+      return;
+    }
+
+    clearSearchMessage();
+
+    flights.forEach((flight) => {
+      const card = document.createElement("article");
+      card.className = "flight-card";
+
+      const title = document.createElement("h3");
+      title.textContent = String(
+        getFlightValue(flight, ["flightNumber", "flightNo", "name"], "Flight")
+      );
+
+      const route = document.createElement("p");
+      route.textContent =
+        String(getFlightValue(flight, ["source", "origin", "from"])) +
+        " → " +
+        String(getFlightValue(flight, ["destination", "destinationCity", "to"]));
+
+      const time = document.createElement("p");
+      time.textContent =
+        "Departure: " +
+        String(getFlightValue(flight, ["departureTime", "departureDateTime", "departure"]));
+
+      const fare = document.createElement("p");
+      fare.textContent =
+        "Fare: ₹" +
+        String(getFlightValue(flight, ["price", "fare", "ticketPrice"]));
+
+      const seats = document.createElement("p");
+      seats.textContent =
+        "Available seats: " +
+        String(getFlightValue(flight, ["availableSeats", "seatsAvailable", "seatsLeft"]));
+
+      card.append(title, route, time, fare, seats);
+
+      const bookButton = document.createElement("button");
+      bookButton.type = "button";
+      bookButton.className = "btn-accent";
+      bookButton.textContent = "Book Flight";
+
+      bookButton.addEventListener("click", () => {
+        showSearchMessage(
+          "Flight selected. Open My Bookings or sign in before continuing. " +
+          "The booking API integration must match your backend endpoints.",
+          "success"
+        );
+
+        // Do not create a booking until the correct backend booking
+        // endpoint and request fields have been confirmed.
+      });
+
+      card.appendChild(bookButton);
+      searchResults.appendChild(card);
+    });
+  }
+
+  searchForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearSearchMessage();
+    resultsSection.hidden = true;
+    searchResults.replaceChildren();
+
+    const source = document.getElementById("source").value.trim();
+    const destination = document.getElementById("destination").value.trim();
+    const date = departureDate.value;
+
+    if (!source || !destination || !date) {
+      showSearchMessage("Please fill in all search fields.", "error");
+      return;
+    }
+
+    if (source.toLowerCase() === destination.toLowerCase()) {
+      showSearchMessage("From and To cities must be different.", "error");
+      return;
+    }
+
+    if (date < localToday) {
+      showSearchMessage("Please choose today or a future date.", "error");
+      return;
+    }
+
+    searchButton.disabled = true;
+    searchButton.textContent = "Searching...";
+    showSearchMessage("Searching for available flights...", "success");
+
+    try {
+      const apiBase = window.SKYBOOK_API_BASE.replace(/\/+$/, "");
+
+      const params = new URLSearchParams({
+        source,
+        destination,
+        date
+      });
+
+      const response = await fetch(
+        `${apiBase}/flights/search?${params.toString()}`,
+        {
+          method: "GET",
+          headers: { "Accept": "application/json" }
+        }
+      );
+
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error(
+          `Flight search failed (${response.status}). ` +
+          (detail || "Please try again.")
+        );
+      }
+
+      const data = await response.json();
+
+      // Supports either a direct array or a common wrapped response.
+      const flights = Array.isArray(data)
+        ? data
+        : data.flights || data.content || data.data || [];
+
+      renderFlights(flights);
+    } catch (error) {
+      console.error("SkyBook flight search error:", error);
+      showSearchMessage(
+        error.message ||
+        "Could not connect to SkyBook. Please try again later.",
+        "error"
+      );
+    } finally {
+      searchButton.disabled = false;
+      searchButton.textContent = "Search Flights";
+    }
+  });
+</script>
+
+<script src="js/auth.js"></script>
+<script src="js/search.js"></script>
+</body>
+</html>

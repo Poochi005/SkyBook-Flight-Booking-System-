@@ -195,25 +195,41 @@
     <div class="logo">✈️</div>
 
     <h1 id="formTitle">Welcome back</h1>
-    <p class="subtitle" id="formSubtitle">Sign in to continue to SkyBook</p>
+    <p class="subtitle" id="formSubtitle">
+      Sign in to continue to SkyBook
+    </p>
 
     <div id="message" class="message" role="status" aria-live="polite"></div>
 
     <form id="authForm">
       <div class="field">
         <label for="email">Email address</label>
-        <input id="email" name="email" type="email"
-          placeholder="you@example.com" autocomplete="email" required>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          required
+        >
       </div>
 
       <div class="field">
         <label for="password">Password</label>
-        <input id="password" name="password" type="password"
-          placeholder="Enter password" autocomplete="current-password"
-          minlength="6" required>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="Enter password"
+          autocomplete="current-password"
+          minlength="6"
+          required
+        >
       </div>
 
-      <button type="submit" class="btn-primary" id="submitBtn">Sign In</button>
+      <button type="submit" class="btn-primary" id="submitBtn">
+        Sign In
+      </button>
     </form>
 
     <div class="divider">OR</div>
@@ -233,7 +249,10 @@
       <a href="#" id="toggleLink">Sign up</a>
     </p>
 
-    <a href="dashboard.html" class="back-link">← Back to SkyBook Home</a>
+    <a
+      href="https://poochi005.github.io/SkyBook-Flight-Booking-System-/dashboard.html"
+      class="back-link"
+    >← Back to SkyBook Home</a>
   </main>
 
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
@@ -250,6 +269,9 @@
       measurementId: "G-TWGTWRKY56"
     };
 
+    const DASHBOARD_URL =
+      "https://poochi005.github.io/SkyBook-Flight-Booking-System-/dashboard.html";
+
     const form = document.getElementById("authForm");
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
@@ -263,10 +285,11 @@
 
     let isSignUp = false;
     let auth = null;
-    let redirecting = false;
+    let redirectStarted = false;
+    let authActionInProgress = false;
 
-    function showMessage(text, type = "info") {
-      messageEl.textContent = text;
+    function showMessage(message, type = "info") {
+      messageEl.textContent = message;
       messageEl.className = "message " + type;
     }
 
@@ -279,38 +302,68 @@
       submitBtn.disabled = loading;
       googleBtn.disabled = loading;
       toggleLink.style.pointerEvents = loading ? "none" : "auto";
+
       submitBtn.textContent = loading
         ? "Please wait..."
         : (isSignUp ? "Create Account" : "Sign In");
+    }
+
+    function redirectToDashboard() {
+      if (redirectStarted) return;
+
+      redirectStarted = true;
+      showMessage("Login successful! Redirecting to SkyBook...", "success");
+
+      // Use a fixed URL to avoid relative-path routing problems.
+      window.location.assign(DASHBOARD_URL);
     }
 
     function readableAuthError(error) {
       console.error("Firebase authentication error:", error);
 
       const messages = {
-        "auth/email-already-in-use": "This email is already registered. Please sign in.",
-        "auth/invalid-email": "Please enter a valid email address.",
-        "auth/invalid-credential": "Incorrect email or password.",
-        "auth/user-not-found": "No account found. Please sign up first.",
-        "auth/wrong-password": "Incorrect email or password.",
-        "auth/weak-password": "Choose a password with at least 6 characters.",
-        "auth/too-many-requests": "Too many attempts. Please wait and try again.",
-        "auth/network-request-failed": "Network error. Check your internet connection.",
-        "auth/operation-not-allowed": "Enable this sign-in method in Firebase Console.",
-        "auth/unauthorized-domain": "Add poochi005.github.io to Firebase Authorized domains.",
-        "auth/popup-blocked": "Your browser blocked the Google sign-in popup.",
-        "auth/popup-closed-by-user": "The Google sign-in window was closed.",
-        "auth/cancelled-popup-request": "Another sign-in popup is already open.",
-        "auth/account-exists-with-different-credential": "This email uses another sign-in method."
+        "auth/email-already-in-use":
+          "This email is already registered. Please sign in.",
+        "auth/invalid-email":
+          "Please enter a valid email address.",
+        "auth/invalid-credential":
+          "Incorrect email or password.",
+        "auth/user-not-found":
+          "No account found. Please sign up first.",
+        "auth/wrong-password":
+          "Incorrect email or password.",
+        "auth/weak-password":
+          "Choose a password with at least 6 characters.",
+        "auth/too-many-requests":
+          "Too many attempts. Please wait and try again.",
+        "auth/network-request-failed":
+          "Network error. Check your internet connection.",
+        "auth/operation-not-allowed":
+          "Enable this sign-in method in Firebase Console.",
+        "auth/unauthorized-domain":
+          "Add poochi005.github.io to Firebase Authorized domains.",
+        "auth/popup-blocked":
+          "Your browser blocked the Google sign-in popup.",
+        "auth/popup-closed-by-user":
+          "The Google sign-in window was closed.",
+        "auth/cancelled-popup-request":
+          "Another sign-in popup is already open.",
+        "auth/account-exists-with-different-credential":
+          "This email uses another sign-in method."
       };
 
-      return messages[error.code] || error.message || "Authentication failed. Please try again.";
+      return messages[error.code] ||
+        error.message ||
+        "Authentication failed. Please try again.";
     }
 
     function updateMode() {
       clearMessage();
 
-      formTitle.textContent = isSignUp ? "Create an account" : "Welcome back";
+      formTitle.textContent = isSignUp
+        ? "Create an account"
+        : "Welcome back";
+
       formSubtitle.textContent = isSignUp
         ? "Sign up to start using SkyBook"
         : "Sign in to continue to SkyBook";
@@ -320,37 +373,44 @@
         : "Don't have an account?";
 
       toggleLink.textContent = isSignUp ? "Sign in" : "Sign up";
-      passwordInput.autocomplete = isSignUp ? "new-password" : "current-password";
-      submitBtn.textContent = isSignUp ? "Create Account" : "Sign In";
-    }
 
-    function goToDashboard() {
-      if (redirecting) return;
-      redirecting = true;
-      showMessage("Login successful! Opening SkyBook dashboard...", "success");
+      passwordInput.autocomplete = isSignUp
+        ? "new-password"
+        : "current-password";
 
-      // index.html and dashboard.html are in the same frontend folder.
-      window.location.replace(new URL("dashboard.html", window.location.href).href);
+      submitBtn.textContent = isSignUp
+        ? "Create Account"
+        : "Sign In";
     }
 
     toggleLink.addEventListener("click", function(event) {
       event.preventDefault();
+
+      if (authActionInProgress) return;
+
       isSignUp = !isSignUp;
       updateMode();
     });
 
+    // Email/password sign-in and account creation.
     form.addEventListener("submit", async function(event) {
       event.preventDefault();
       clearMessage();
 
       if (!auth) {
-        showMessage("Firebase did not initialize. Check your Firebase configuration.", "error");
+        showMessage(
+          "Firebase is not initialized. Check your configuration and internet connection.",
+          "error"
+        );
         return;
       }
+
+      if (authActionInProgress) return;
 
       const email = emailInput.value.trim();
       const password = passwordInput.value;
 
+      authActionInProgress = true;
       setLoading(true);
 
       try {
@@ -360,35 +420,60 @@
           await auth.signInWithEmailAndPassword(email, password);
         }
 
-        goToDashboard();
+        redirectToDashboard();
       } catch (error) {
         showMessage(readableAuthError(error), "error");
-        setLoading(false);
+      } finally {
+        authActionInProgress = false;
+
+        if (!redirectStarted) {
+          setLoading(false);
+        }
       }
     });
 
+    // Google sign-in.
     googleBtn.addEventListener("click", async function() {
       clearMessage();
 
       if (!auth) {
-        showMessage("Firebase did not initialize. Check your Firebase configuration.", "error");
+        showMessage(
+          "Firebase is not initialized. Check your configuration and internet connection.",
+          "error"
+        );
         return;
       }
 
+      if (authActionInProgress) return;
+
+      authActionInProgress = true;
       setLoading(true);
 
       try {
         const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: "select_account" });
+        provider.setCustomParameters({
+          prompt: "select_account"
+        });
 
-        await auth.signInWithPopup(provider);
-        goToDashboard();
+        const result = await auth.signInWithPopup(provider);
+
+        if (result && result.user) {
+          redirectToDashboard();
+        } else {
+          throw new Error("Google sign-in did not return a user.");
+        }
       } catch (error) {
         showMessage(readableAuthError(error), "error");
-        setLoading(false);
+      } finally {
+        authActionInProgress = false;
+
+        if (!redirectStarted) {
+          setLoading(false);
+        }
       }
     });
 
+    // Initialize Firebase once.
     try {
       if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
@@ -397,17 +482,27 @@
       auth = firebase.auth();
 
       auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-        .catch(error => console.error("Firebase persistence error:", error));
+        .catch(function(error) {
+          console.error("Firebase persistence error:", error);
+        });
 
+      // Do not redirect during an active sign-in attempt.
+      // The sign-in handlers perform the redirect after success.
       auth.onAuthStateChanged(function(user) {
-        // If the user is already signed in, go straight to the dashboard.
-        if (user && !redirecting) {
-          goToDashboard();
+        if (
+          user &&
+          !authActionInProgress &&
+          !redirectStarted
+        ) {
+          redirectToDashboard();
         }
       });
     } catch (error) {
       console.error("Firebase initialization error:", error);
-      showMessage("Firebase initialization failed. Check project settings.", "error");
+      showMessage(
+        "Firebase initialization failed. Check your Firebase project settings.",
+        "error"
+      );
     }
   </script>
 </body>
